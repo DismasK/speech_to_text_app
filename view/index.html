@@ -7,25 +7,49 @@
     <style>
         #data {
             text-align: center;
-        }
-
-        .var:hover {
-            transform: scale(1.1);
-            transition: all ease 700ms;
+            margin-top: 10%;
         }
     </style>
 </head>
 
 <body>
     <div id="data">
-        <div class="var">
-            <h1>Upload your speech here</h1>
-            <form enctype="multipart/form-data" action="/data" method="post">
-                <input type="file" name="speech">
-                <input type="submit" value="Send">
-            </form>
-        </div>
+        <h1>Upload your speech here. *Only WAV Files</h1>
+        <form enctype="multipart/form-data" method="POST">
+            <input type="file" name="speech" id="sp">
+            <input type="submit" value="Send">
+        </form>
     </div>
 </body>
+
+<script>
+    function getMobileOperatingSystem() {
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        if (/android/i.test(userAgent)) {
+            var inp = document.getElementById('sp')
+            inp.setAttribute('accept', 'audio/*')
+            inp.setAttribute('capture', '')
+        }
+    }
+    window.onload = getMobileOperatingSystem;
+    const form = document.querySelector('form');
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const files = document.querySelector('[type=file]').files;
+        const formData = new FormData();
+        formData.append('speech', files[0])
+        fetch("/data", {
+            method: 'POST',
+            body: formData
+        })
+            .then(r => r.json())
+            .then(response => {
+                var resp = document.createElement('h2')
+                var node = document.createTextNode('Your text is: ' + response.Text)
+                resp.appendChild(node)
+                document.getElementById('data').appendChild(resp)
+            });
+    });
+</script>
 
 </html>

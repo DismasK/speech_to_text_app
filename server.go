@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/wit-ai/wit-go"
 	"io"
 	"log"
@@ -9,11 +9,16 @@ import (
 	"os"
 )
 
+type Response struct {
+	Text string
+}
+
 const token = ""
 
 func dataProcess(w http.ResponseWriter, r *http.Request) {
 	userFile, header, err := r.FormFile("speech")
 	if err != nil {
+		log.Println(err)
 		w.Write([]byte(`<script>window.location="/";alert('File upload error')</script>`))
 		return
 	}
@@ -21,6 +26,7 @@ func dataProcess(w http.ResponseWriter, r *http.Request) {
 
 	fileCreating, err := os.OpenFile("./files/"+header.Filename, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
+		log.Println(err)
 		w.Write([]byte(`<script>window.location="/";alert('File creating error')</script>`))
 		return
 	}
@@ -29,12 +35,14 @@ func dataProcess(w http.ResponseWriter, r *http.Request) {
 
 	_, err = io.Copy(fileCreating, userFile)
 	if err != nil {
+		log.Println(err)
 		w.Write([]byte(`<script>window.location="/";alert('File writting error')</script>`))
 		return
 	}
 
 	fileForSend, err := os.Open("./files/" + header.Filename)
 	if err != nil {
+		log.Println(err)
 		w.Write([]byte(`<script>window.location="/";alert('File opening error')</script>`))
 		return
 	}
@@ -55,7 +63,9 @@ func dataProcess(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprint(w, msg.Text)
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(Response{Text: msg.Text})
 }
 
 func sever() {
