@@ -26,12 +26,14 @@
     function getMobileOperatingSystem() {
         var userAgent = navigator.userAgent || navigator.vendor || window.opera;
         if (/android/i.test(userAgent)) {
+            document.getElementsByTagName('h1')[0].innerHTML = 'Record your speech via microphone. *Only WAV Files'
             var inp = document.getElementById('sp')
             inp.setAttribute('accept', 'audio/*')
             inp.setAttribute('capture', '')
         }
     }
     window.onload = getMobileOperatingSystem;
+
     const form = document.querySelector('form');
     form.addEventListener('submit', e => {
         e.preventDefault();
@@ -42,13 +44,19 @@
             method: 'POST',
             body: formData
         })
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) {
+                    throw Error(r.statusText)
+                }
+                return r.json()
+            })
             .then(response => {
                 var resp = document.createElement('h2')
                 var node = document.createTextNode('Your text is: ' + response.Text)
                 resp.appendChild(node)
                 document.getElementById('data').appendChild(resp)
-            });
+            })
+            .catch(err => { alert(err) });
     });
 </script>
 
