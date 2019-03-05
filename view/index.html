@@ -3,61 +3,18 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Converter</title>
-    <style>
-        #data {
-            text-align: center;
-            margin-top: 10%;
-        }
-    </style>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
-    <div id="data">
-        <h1>Upload your speech here. *Only WAV Files</h1>
-        <form enctype="multipart/form-data" method="POST">
-            <input type="file" name="speech" id="sp">
-            <input type="submit" value="Send">
-        </form>
-    </div>
+    <div id="root"></div>
 </body>
 
-<script>
-    function getMobileOperatingSystem() {
-        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        if (/android/i.test(userAgent)) {
-            document.getElementsByTagName('h1')[0].innerHTML = 'Record your speech via microphone. *Only WAV Files'
-            var inp = document.getElementById('sp')
-            inp.setAttribute('accept', 'audio/*')
-            inp.setAttribute('capture', '')
-        }
-    }
-    window.onload = getMobileOperatingSystem;
-
-    const form = document.querySelector('form');
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        const files = document.querySelector('[type=file]').files;
-        const formData = new FormData();
-        formData.append('speech', files[0])
-        fetch("/data", {
-            method: 'POST',
-            body: formData
-        })
-            .then(r => {
-                if (!r.ok) {
-                    throw Error(r.statusText)
-                }
-                return r.json()
-            })
-            .then(response => {
-                var resp = document.createElement('h2')
-                var node = document.createTextNode('Your text is: ' + response.Text)
-                resp.appendChild(node)
-                document.getElementById('data').appendChild(resp)
-            })
-            .catch(err => { alert(err) });
-    });
-</script>
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script type="text/babel" src="./App.jsx"></script>
 
 </html>
