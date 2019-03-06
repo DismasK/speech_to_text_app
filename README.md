@@ -2,9 +2,11 @@
 # speech_to_text_app
 WEB application for converting speech into text. Builded with React.js and Golang.
 
+Speech to text converting povered by *wit.ai*
+
 # Examples
 
-![app example](https://github.com/speech_to_text_app/blob/master/image.JPG)
+![app example](https://github.com/trigun117/speech_to_text_app/blob/master/image.JPG)
 
 # Get Started
 Clone repository `git clone https://github.com/trigun117/speech_to_text_app.git`
