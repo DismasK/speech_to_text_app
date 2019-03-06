@@ -2,7 +2,7 @@
 # speech_to_text_app
 WEB application for converting speech into text. Builded with React.js and Golang.
 
-Speech to text converting povered by *wit.ai*
+Speech to text converting povered by [wit.ai](https://wit.ai/)
 
 # Examples
 
