@@ -68,7 +68,8 @@ class App extends React.Component {
         let files = document.querySelector('[type=file]').files;
         let formData = new FormData();
         formData.append('speech', files[0])
-        fetch("/data", {
+        const HOST = window.location.origin;
+        fetch(HOST + "/data", {
             method: 'POST',
             body: formData
         })

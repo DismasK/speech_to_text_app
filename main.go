@@ -13,8 +13,6 @@ type Response struct {
 	Text string
 }
 
-const token = "YOUR_TOKEN"
-
 func dataProcess(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		userFile, header, err := r.FormFile("speech")
@@ -49,7 +47,7 @@ func dataProcess(w http.ResponseWriter, r *http.Request) {
 		}
 		defer fileForSend.Close()
 
-		client := witai.NewClient(token)
+		client := witai.NewClient(os.Getenv("TOKEN"))
 		msg, err := client.Speech(
 			&witai.MessageRequest{
 				Speech: &witai.Speech{
