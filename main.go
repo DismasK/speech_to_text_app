@@ -25,13 +25,13 @@ func dataProcess(w http.ResponseWriter, r *http.Request) {
 		}
 		defer userFile.Close()
 
-		fileCreating, err := os.OpenFile("./files/"+header.Filename, os.O_WRONLY|os.O_CREATE, 0644)
+		fileCreating, err := os.OpenFile(header.Filename, os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		defer os.Remove("./files/" + header.Filename)
+		defer os.Remove(header.Filename)
 		defer fileCreating.Close()
 
 		_, err = io.Copy(fileCreating, userFile)
@@ -41,7 +41,7 @@ func dataProcess(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fileForSend, err := os.Open("./files/" + header.Filename)
+		fileForSend, err := os.Open(header.Filename)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -71,11 +71,7 @@ func dataProcess(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	err := os.Mkdir("files", 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	http.HandleFunc("/data", dataProcess)
 	http.Handle("/", http.FileServer(http.Dir("view")))
+	http.HandleFunc("/data", dataProcess)
 	http.ListenAndServe(":80", nil)
 }

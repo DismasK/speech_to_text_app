@@ -5,8 +5,37 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="icon" href="./favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <title>Converter</title>
+    <style>
+        body {
+            text-align: center;
+            background-color: #0074D9;
+            color: white;
+        }
+
+        header {
+            font-size: 60px;
+        }
+
+        h2 {
+            border-left-style: solid;
+            border-right-style: solid;
+            background-color: #e74c3c;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10%;
+            width: 35%;
+        }
+
+        #content {
+            margin-top: 10%;
+        }
+
+        #sp {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -16,6 +45,63 @@
 <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-<script type="text/babel" src="./App.jsx"></script>
+
+<script type="text/babel">
+class App extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            device: false,
+            response: ''
+        }
+    }
+    componentWillMount() {
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        if (/android/i.test(userAgent)) {
+            this.setState({
+                device: true
+            });
+        }
+    }
+    submitFile = (e) => {
+        e.preventDefault();
+        let files = document.querySelector('[type=file]').files;
+        let formData = new FormData();
+        formData.append('speech', files[0])
+        fetch("/data", {
+            method: 'POST',
+            body: formData
+        })
+            .then(r => {
+                if (!r.ok) {
+                    throw Error(r.statusText)
+                }
+                return r.json()
+            })
+            .then(response => {
+                this.setState({
+                    response: response.Text
+                })
+            })
+            .catch(err => { alert(err) });
+    }
+    render() {
+        return (
+            <div>
+                <header>Speech to Text</header>
+                <div id="content">
+                    <h1>{this.state.device ? 'Record your speech via microphone. *Only WAV Files' : 'Upload your speech here. *Only WAV Files'}</h1>
+                    <form encType="multipart/form-data" method="POST" onChange={this.submitFile}>
+                        <label htmlFor="sp" id="lbl"><i class="fas fa-cloud-upload-alt fa-5x"></i></label>
+                        <input type="file" name="speech" id="sp" accept={this.state.device ? 'audio/*' : null} capture={this.state.device ? 'capture' : null} />
+                    </form>
+                </div>
+                <h2>{this.state.response}</h2>
+            </div>
+        )
+    }
+}
+ReactDOM.render(<App />, document.getElementById('root'))
+</script>
 
 </html>
