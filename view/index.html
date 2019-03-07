@@ -81,7 +81,7 @@ class App extends React.Component {
             })
             .then(response => {
                 this.setState({
-                    response: response.Text
+                    response: response.text
                 })
             })
             .catch(err => { alert(err) });

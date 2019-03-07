@@ -9,8 +9,9 @@ import (
 	"os"
 )
 
+// Response struct contain response from wit.ai
 type Response struct {
-	Text string
+	Text string `json:"text"`
 }
 
 func dataProcess(w http.ResponseWriter, r *http.Request) {
