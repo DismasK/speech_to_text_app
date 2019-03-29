@@ -1,12 +1,15 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
-	"github.com/wit-ai/wit-go"
 	"io"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/wit-ai/wit-go"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 // Response struct contain response from wit.ai
@@ -72,5 +75,23 @@ func dataProcess(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.Handle("/", http.FileServer(http.Dir("view")))
 	http.HandleFunc("/data", dataProcess)
-	http.ListenAndServe(":80", nil)
+	if os.Getenv("PROD") == "true" {
+		certManager := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: autocert.HostWhitelist(os.Getenv("DOMAIN")),
+			Cache:      autocert.DirCache("."),
+		}
+		server := &http.Server{
+			Addr: ":https",
+			TLSConfig: &tls.Config{
+				GetCertificate: certManager.GetCertificate,
+			},
+		}
+		go func() {
+			log.Fatal(http.ListenAndServe(":http", certManager.HTTPHandler(nil)))
+		}()
+		log.Fatal(server.ListenAndServeTLS("", ""))
+	} else {
+		log.Fatal(http.ListenAndServe(":http", nil))
+	}
 }
