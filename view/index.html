@@ -1,108 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <meta name="theme-color" content="#0074D9">
+    <meta name="Description" content="Speech to text app">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="apple-touch-icon" href="touch-icons/touch-icon-57x57.png" sizes="57x57" />
+    <link rel="apple-touch-icon" href="touch-icons/touch-icon-60x60.png" sizes="60x60" />
+    <link rel="apple-touch-icon" href="touch-icons/touch-icon-72x72.png" sizes="72x72" />
+    <link rel="apple-touch-icon" href="touch-icons/touch-icon-76x76.png" sizes="76x76" />
+    <link rel="apple-touch-icon" href="touch-icons/touch-icon-114x114.png" sizes="114x114" />
+    <link rel="apple-touch-icon" href="touch-icons/touch-icon-120x120.png" sizes="120x120" />
+    <link rel="apple-touch-icon" href="touch-icons/touch-icon-144x144.png" sizes="144x144" />
+    <link rel="apple-touch-icon" href="touch-icons/touch-icon-152x152.png" sizes="152x152" />
+
+    <link href="splashscreens/iphone5_splash.png"
+        media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)"
+        rel="apple-touch-startup-image" />
+    <link href="splashscreens/iphone6_splash.png"
+        media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)"
+        rel="apple-touch-startup-image" />
+    <link href="splashscreens/iphoneplus_splash.png"
+        media="(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)"
+        rel="apple-touch-startup-image" />
+    <link href="splashscreens/iphonex_splash.png"
+        media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)"
+        rel="apple-touch-startup-image" />
+    <link href="splashscreens/ipad_splash.png"
+        media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)"
+        rel="apple-touch-startup-image" />
+    <link href="splashscreens/ipadpro1_splash.png"
+        media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)"
+        rel="apple-touch-startup-image" />
+    <link href="splashscreens/ipadpro2_splash.png"
+        media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)"
+        rel="apple-touch-startup-image" />
+
+    <link id="manifest" rel="manifest" href="./manifests/manifest.json">
+    <link rel="icon" href="./icons/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+        integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/style.css">
+
     <title>Converter</title>
-    <style>
-        body {
-            text-align: center;
-            background-color: #0074D9;
-            color: white;
-        }
-
-        header {
-            font-size: 60px;
-        }
-
-        h2 {
-            border-left-style: solid;
-            border-right-style: solid;
-            background-color: #e74c3c;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 10%;
-            width: 35%;
-        }
-
-        #content {
-            margin-top: 10%;
-        }
-
-        #sp {
-            display: none;
-        }
-    </style>
 </head>
 
 <body>
+
     <div id="root"></div>
+    <noscript>JS not supported</noscript>
+
 </body>
 
 <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-
-<script type="text/babel">
-class App extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            device: false,
-            response: ''
-        }
-    }
-    componentWillMount() {
-        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        if (/android/i.test(userAgent)) {
-            this.setState({
-                device: true
-            });
-        }
-    }
-    submitFile = (e) => {
-        e.preventDefault();
-        let files = document.querySelector('[type=file]').files;
-        let formData = new FormData();
-        formData.append('speech', files[0])
-        const HOST = window.location.origin;
-        fetch(HOST + "/data", {
-            method: 'POST',
-            body: formData
-        })
-            .then(r => {
-                if (!r.ok) {
-                    throw Error(r.statusText)
-                }
-                return r.json()
-            })
-            .then(response => {
-                this.setState({
-                    response: response.text
-                })
-            })
-            .catch(err => { alert(err) });
-    }
-    render() {
-        return (
-            <div>
-                <header>Speech to Text</header>
-                <div id="content">
-                    <h1>{this.state.device ? 'Record your speech via microphone. *Only WAV Files' : 'Upload your speech here. *Only WAV Files'}</h1>
-                    <form encType="multipart/form-data" method="POST" onChange={this.submitFile}>
-                        <label htmlFor="sp" id="lbl"><i class="fas fa-cloud-upload-alt fa-5x"></i></label>
-                        <input type="file" name="speech" id="sp" accept={this.state.device ? 'audio/*' : null} capture={this.state.device ? 'capture' : null} />
-                    </form>
-                </div>
-                <h2>{this.state.response}</h2>
-            </div>
-        )
-    }
-}
-ReactDOM.render(<App />, document.getElementById('root'))
-</script>
+<script src="https://cdn.rawgit.com/mattdiamond/Recorderjs/08e7abd9/dist/recorder.js"></script>
+<script src="./js/app.jsx" type="text/babel"></script>
+<script src="./js/service-worker-register.js"></script>
 
 </html>

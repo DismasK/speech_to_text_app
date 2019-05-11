@@ -1,0 +1,27 @@
+body {
+    text-align: center;
+    background-color: #0074D9;
+    color: white;
+}
+
+header {
+    font-size: 60px;
+}
+
+h2 {
+    border-left-style: solid;
+    border-right-style: solid;
+    background-color: #e74c3c;
+    word-wrap: break-word;
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+}
+
+#content {
+    margin-top: 10%;
+}
+
+#sp {
+    display: none;
+}

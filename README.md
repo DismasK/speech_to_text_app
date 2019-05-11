@@ -1,6 +1,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/trigun117/speech_to_text_app)](https://goreportcard.com/report/github.com/trigun117/speech_to_text_app)
 # speech_to_text_app
-WEB application for converting speech into text. Builded with React.js and Golang.
+PWA(Progressive Web Application) web application for converting speech into text. Builded with React.js and Golang.
 
 Speech to text converting povered by [wit.ai](https://wit.ai/)
 
