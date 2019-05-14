@@ -19,7 +19,7 @@ type Response struct {
 
 func dataProcess(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		userFile, header, err := r.FormFile("speech")
+		userFile, header, err := r.FormFile("file")
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)

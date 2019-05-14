@@ -1,12 +1,37 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+front-end/node_modules
+front-end/.pnp
+front-end/.pnp.js
+
+# testing
+front-end/coverage
+
+# production
+front-end/build
+
+# misc
+front-end/.DS_Store
+front-end/.env.local
+front-end/.env.development.local
+front-end/.env.test.local
+front-end/.env.production.local
+
+front-end/npm-debug.log*
+front-end/yarn-debug.log*
+front-end/yarn-error.log*
+
+
 # Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+back-end/*.exe
+back-end/*.exe~
+back-end/*.dll
+back-end/*.so
+back-end/*.dylib
 
 # Test binary, build with `go test -c`
-*.test
+back-end/*.test
 
 # Output of the go coverage tool, specifically when used with LiteIDE
-*.out
+back-end/*.out

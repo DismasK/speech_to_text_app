@@ -6,8 +6,8 @@ Speech to text converting povered by [wit.ai](https://wit.ai/)
 
 # Examples
 
-![app example](https://github.com/trigun117/speech_to_text_app/blob/master/image.JPG)
-![app example](https://github.com/trigun117/speech_to_text_app/blob/master/image1.JPG)
+![app example](/image.JPG)
+![app example](/image1.JPG)
 
 # Get Started
 Clone repository `git clone https://github.com/trigun117/speech_to_text_app.git`
