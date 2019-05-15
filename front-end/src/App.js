@@ -50,7 +50,6 @@ export default class Application extends Component {
         );
     }
 
-
     async stopRecord() {
         const { recorder } = this.state;
         const { buffer } = await recorder.stop()
