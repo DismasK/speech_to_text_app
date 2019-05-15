@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/wit-ai/wit-go"
 	"golang.org/x/crypto/acme/autocert"
@@ -19,7 +21,7 @@ type Response struct {
 
 func dataProcess(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		userFile, header, err := r.FormFile("file")
+		userFile, _, err := r.FormFile("file")
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -27,13 +29,15 @@ func dataProcess(w http.ResponseWriter, r *http.Request) {
 		}
 		defer userFile.Close()
 
-		fileCreating, err := os.OpenFile(header.Filename, os.O_WRONLY|os.O_CREATE, 0644)
+		fileName := strconv.Itoa(int(time.Now().UnixNano()))
+
+		fileCreating, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		defer os.Remove(header.Filename)
+		defer os.Remove(fileName)
 		defer fileCreating.Close()
 
 		_, err = io.Copy(fileCreating, userFile)
@@ -43,7 +47,7 @@ func dataProcess(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fileForSend, err := os.Open(header.Filename)
+		fileForSend, err := os.Open(fileName)
 		if err != nil {
 			log.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)

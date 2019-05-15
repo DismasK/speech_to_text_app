@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import RecorderJS from 'recorder-js'
-import { getAudioStream, exportBuffer } from './util/audio';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudDownloadAlt, faMicrophone } from '@fortawesome/free-solid-svg-icons';
 
@@ -18,14 +17,14 @@ export default class Application extends Component {
         this.stopRecord = this.stopRecord.bind(this)
     }
 
-    async componentDidMount() {
+    componentDidMount = async () => {
         if (/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
             document.getElementById("manifest").href = "./manifests/ios-manifest.json";
         }
 
         let stream;
         try {
-            stream = await getAudioStream();
+            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         } catch (error) {
             this.setState({
                 accept: false
@@ -34,7 +33,7 @@ export default class Application extends Component {
         this.setState({ stream });
     }
 
-    startRecord() {
+    startRecord = () => {
         const { stream } = this.state;
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const recorder = new RecorderJS(audioContext);
@@ -50,11 +49,11 @@ export default class Application extends Component {
         );
     }
 
-    async stopRecord() {
+    stopRecord = () => {
         const { recorder } = this.state;
-        const { buffer } = await recorder.stop()
-        const audio = exportBuffer(buffer[0]);
-        this.uploadFile(audio);
+        recorder.stop().then(({ blob }) => {
+            this.uploadFile(blob);
+        })
         this.setState({
             recording: false
         });
@@ -62,7 +61,7 @@ export default class Application extends Component {
 
     uploadFile = file => {
         let formData = new FormData();
-        formData.append('file', file)
+        formData.append('file', file);
         const HOST = window.location.origin;
         fetch(HOST + "/data", {
             method: 'POST',
