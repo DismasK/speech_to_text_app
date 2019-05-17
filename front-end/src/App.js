@@ -2,12 +2,14 @@ import React, { Component } from 'react'
 import RecorderJS from 'recorder-js'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudDownloadAlt, faMicrophone } from '@fortawesome/free-solid-svg-icons';
+import ReactLoading from 'react-loading';
 
 export default class Application extends Component {
     constructor(props) {
         super(props);
         this.state = {
             response: '',
+            loading: false,
             accept: true,
             stream: null,
             recording: false,
@@ -60,6 +62,9 @@ export default class Application extends Component {
     }
 
     uploadFile = file => {
+        this.setState({
+            loading: true
+        });
         let formData = new FormData();
         formData.append('file', file);
         const HOST = window.location.origin;
@@ -75,10 +80,16 @@ export default class Application extends Component {
             })
             .then(response => {
                 this.setState({
+                    loading: false,
                     response: response.text
                 })
             })
-            .catch(err => { alert(err) });
+            .catch(err => {
+                this.setState({
+                    loading: false
+                })
+                alert(err)
+            });
     }
 
     render() {
@@ -86,27 +97,30 @@ export default class Application extends Component {
             <div>
                 <header>Speech to Text</header>
                 <div id="content">
-                    <h1>{this.state.accept ? 'Click to record your speech via microphone' : 'Click to upload your speech here. *Only WAV Files'}</h1>
                     {
-                        this.state.accept
-
+                        this.state.loading
                             ?
-
-                            <FontAwesomeIcon onClick={this.state.recording ? this.stopRecord : this.startRecord} icon={faMicrophone} size={'5x'} />
-
+                            <ReactLoading id='load' type={'bars'} color={'white'} />
                             :
-
                             [
-                                <label key={'icon'} htmlFor="sp" id="lbl">
-                                    <FontAwesomeIcon icon={faCloudDownloadAlt} size={'5x'} />
-                                </label>
+                                <h1 key={'message'} >{this.state.accept ? 'Click to record your speech via microphone' : 'Click to upload your speech here. *Only WAV Files'}</h1>
                                 ,
-                                <input key={'field'} type="file" id="sp" onChange={e => this.uploadFile(e.target.files[0])} />
+                                this.state.accept
+                                    ?
+                                    <FontAwesomeIcon key={'microphone'} onClick={this.state.recording ? this.stopRecord : this.startRecord} icon={faMicrophone} size={'5x'} />
+                                    :
+                                    [
+                                        <label key={'icon'} htmlFor="inp">
+                                            <FontAwesomeIcon key={'cloud'} icon={faCloudDownloadAlt} size={'5x'} />
+                                        </label>
+                                        ,
+                                        <input key={'field'} type="file" id="inp" onChange={e => this.uploadFile(e.target.files[0])} />
+                                    ]
                             ]
                     }
                     {this.state.recording ? <h3>Click to stop</h3> : ''}
                 </div>
-                <h2>{this.state.response}</h2>
+                {this.state.response !== '' && this.state.loading === false ? <h2>{this.state.response}</h2> : null}
             </div>
         )
     }
