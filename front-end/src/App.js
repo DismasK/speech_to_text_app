@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloudDownloadAlt, faMicrophone } from '@fortawesome/free-solid-svg-icons';
 import ReactLoading from 'react-loading';
 
-export default class Application extends Component {
+export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -12,6 +12,7 @@ export default class Application extends Component {
             loading: false,
             accept: true,
             stream: null,
+            audioContext: null,
             recording: false,
             recorder: null
         };
@@ -19,76 +20,96 @@ export default class Application extends Component {
         this.stopRecord = this.stopRecord.bind(this)
     }
 
+    isIOS = () => {
+        return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())
+    }
+
     componentDidMount = async () => {
-        if (/iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase())) {
+        if (this.isIOS()) {
             document.getElementById("manifest").href = "./manifests/ios-manifest.json";
         }
 
-        let stream;
         try {
-            stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.setState({ stream });
         } catch (error) {
             this.setState({
                 accept: false
             })
         }
-        this.setState({ stream });
     }
 
-    startRecord = () => {
+    startRecord = async () => {
+        if (this.isIOS()) {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.setState({ stream })
+        }
         const { stream } = this.state;
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const recorder = new RecorderJS(audioContext);
-        recorder.init(stream);
-        this.setState(
-            {
-                recorder,
-                recording: true
-            },
-            () => {
-                recorder.start();
-            }
-        );
+        recorder.init(stream)
+            .then(
+                this.setState(
+                    {
+                        audioContext,
+                        recorder,
+                        recording: true
+                    },
+                    () => {
+                        recorder.start();
+                    }
+                )
+            );
     }
 
     stopRecord = () => {
+        if (this.isIOS()) {
+            const { stream, audioContext } = this.state;
+            stream.getTracks().forEach(track => track.stop());
+            audioContext.close();
+        }
         const { recorder } = this.state;
-        recorder.stop().then(({ blob }) => {
-            this.uploadFile(blob);
-        })
         this.setState({
             recording: false
-        });
+        },
+            () => {
+                recorder.stop().then(({ blob }) => {
+                    this.uploadFile(blob);
+                })
+            }
+        );
     }
 
     uploadFile = file => {
         this.setState({
             loading: true
-        });
-        let formData = new FormData();
-        formData.append('file', file);
-        const HOST = window.location.origin;
-        fetch(HOST + "/data", {
-            method: 'POST',
-            body: formData
-        })
-            .then(r => {
-                if (!r.ok) {
-                    throw Error(r.statusText)
-                }
-                return r.json()
-            })
-            .then(response => {
-                this.setState({
-                    loading: false,
-                    response: response.text
+        },
+            () => {
+                let formData = new FormData();
+                formData.append('file', file);
+                const HOST = window.location.origin;
+                fetch(HOST + "/data", {
+                    method: 'POST',
+                    body: formData
                 })
-            })
-            .catch(err => {
-                this.setState({
-                    loading: false
-                })
-                alert(err)
+                    .then(r => {
+                        if (!r.ok) {
+                            throw Error(r.statusText)
+                        }
+                        return r.json()
+                    })
+                    .then(response => {
+                        this.setState({
+                            loading: false,
+                            response: response.text
+                        })
+                    })
+                    .catch(err => {
+                        this.setState({
+                            loading: false
+                        })
+                        alert(err)
+                    });
             });
     }
 
