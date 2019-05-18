@@ -10,13 +10,17 @@ Speech to text converting povered by [wit.ai](https://wit.ai/)
 ![app example](/image1.JPG)
 
 # Get Started
-Clone repository `git clone https://github.com/trigun117/speech_to_text_app.git`
+Clone repository `git clone https://github.com/trigun117/speech_to_text_app.git`.
 
-Set your Token
+Switch to front-end folder and run `npm install --silent && npm run build`.
 
-Run main.go file `go run main.go`
+Switch to back-end folder and run `go build -o converter`.
 
-And open `localhost`
+Then create `view` folder in back-end and copy all data from `build` to it.
+
+Set your Token in environment variable `TOKEN` and run `converter` file.
+
+Open `localhost`.
 
 # Docker
 Clone repository `git clone https://github.com/trigun117/speech_to_text_app.git`
